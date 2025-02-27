@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "895660965968",
+    "project_id": "gyan-39cf1",
+    "storage_bucket": "gyan-39cf1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895660965968:android:b5e93bdcfed3347e4ad155",
+        "android_client_info": {
+          "package_name": "com.gyansecure"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl_FeL-OEVJ609_Tr8O2O3teZcDs8UIYE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
