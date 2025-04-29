@@ -1,46 +1,58 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, useColorScheme } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
-import { Snackbar } from "react-native-paper"; // Import Snackbar for error handling
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  ScrollView,
+  useColorScheme,
+} from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
+import {Snackbar} from 'react-native-paper'; // Import Snackbar for error handling
 
 export default function PlayfairCipher() {
-  const [encryptionPlaintext, setEncryptionPlaintext] = useState("");
-  const [encryptionKey, setEncryptionKey] = useState("");
-  const [ciphertext, setCiphertext] = useState("");
+  const [encryptionPlaintext, setEncryptionPlaintext] = useState('');
+  const [encryptionKey, setEncryptionKey] = useState('');
+  const [ciphertext, setCiphertext] = useState('');
 
-  const [decryptionCiphertext, setDecryptionCiphertext] = useState("");
-  const [decryptionKey, setDecryptionKey] = useState("");
-  const [decryptedText, setDecryptedText] = useState("");
+  const [decryptionCiphertext, setDecryptionCiphertext] = useState('');
+  const [decryptionKey, setDecryptionKey] = useState('');
+  const [decryptedText, setDecryptedText] = useState('');
 
   const colorScheme = useColorScheme(); // Detect light or dark mode
   const isDarkMode = colorScheme === 'dark';
 
-  const [error, setError] = useState(""); // For error message
+  const [error, setError] = useState(''); // For error message
   const [visible, setVisible] = useState(false); // Snackbar visibility
 
   const encryptAnim = useSharedValue(-50);
   const decryptAnim = useSharedValue(50);
 
   const encryptStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: withTiming(encryptAnim.value, { duration: 500 }) }],
-    opacity: withTiming(encryptAnim.value === 0 ? 1 : 0, { duration: 500 }),
+    transform: [{translateX: withTiming(encryptAnim.value, {duration: 500})}],
+    opacity: withTiming(encryptAnim.value === 0 ? 1 : 0, {duration: 500}),
   }));
 
   const placeholderColor = isDarkMode ? '#888888' : '#555555'; // Adjust placeholder color
 
   const decryptStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: withTiming(decryptAnim.value, { duration: 500 }) }],
-    opacity: withTiming(decryptAnim.value === 0 ? 1 : 0, { duration: 500 }),
+    transform: [{translateX: withTiming(decryptAnim.value, {duration: 500})}],
+    opacity: withTiming(decryptAnim.value === 0 ? 1 : 0, {duration: 500}),
   }));
 
-  React.useEffect(() => {
+  useEffect(() => {
     encryptAnim.value = 0;
     decryptAnim.value = 0;
   }, []);
 
-  const createMatrix = (key) => {
-    const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
-    key = key.toUpperCase().replace(/J/g, "I");
+  const createMatrix = key => {
+    const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ';
+    key = key.toUpperCase().replace(/J/g, 'I');
     const matrix = [];
     const used = new Set();
 
@@ -60,17 +72,17 @@ export default function PlayfairCipher() {
   };
 
   const preprocessText = (text, addPadding = true) => {
-    text = text.toUpperCase().replace(/J/g, "I").replace(/\s+/g, "");
+    text = text.toUpperCase().replace(/J/g, 'I').replace(/\s+/g, '');
     const processed = [];
 
     for (let i = 0; i < text.length; i++) {
       if (i + 1 < text.length && text[i] === text[i + 1]) {
-        processed.push(text[i] + "X");
+        processed.push(text[i] + 'X');
       } else if (i + 1 < text.length) {
         processed.push(text[i] + text[i + 1]);
         i++;
       } else if (addPadding) {
-        processed.push(text[i] + "X");
+        processed.push(text[i] + 'X');
       } else {
         processed.push(text[i]);
       }
@@ -82,7 +94,7 @@ export default function PlayfairCipher() {
   const findPosition = (matrix, char) => {
     for (let row = 0; row < 5; row++) {
       for (let col = 0; col < 5; col++) {
-        if (matrix[row][col] === char) return { row, col };
+        if (matrix[row][col] === char) return {row, col};
       }
     }
     return null;
@@ -93,13 +105,15 @@ export default function PlayfairCipher() {
     const pos2 = findPosition(matrix, pair[1]);
 
     if (!pos1 || !pos2) {
-      setError(`Character '${pair[0]}' or '${pair[1]}' not found in the matrix.`);
+      setError(
+        `Character '${pair[0]}' or '${pair[1]}' not found in the matrix.`,
+      );
       setVisible(true);
-      return "";
+      return '';
     }
 
-    const { row: r1, col: c1 } = pos1;
-    const { row: r2, col: c2 } = pos2;
+    const {row: r1, col: c1} = pos1;
+    const {row: r2, col: c2} = pos2;
 
     if (r1 === r2) {
       return matrix[r1][(c1 + 1) % 5] + matrix[r2][(c2 + 1) % 5];
@@ -115,13 +129,15 @@ export default function PlayfairCipher() {
     const pos2 = findPosition(matrix, pair[1]);
 
     if (!pos1 || !pos2) {
-      setError(`Character '${pair[0]}' or '${pair[1]}' not found in the matrix.`);
+      setError(
+        `Character '${pair[0]}' or '${pair[1]}' not found in the matrix.`,
+      );
       setVisible(true);
-      return "";
+      return '';
     }
 
-    const { row: r1, col: c1 } = pos1;
-    const { row: r2, col: c2 } = pos2;
+    const {row: r1, col: c1} = pos1;
+    const {row: r2, col: c2} = pos2;
 
     if (r1 === r2) {
       return matrix[r1][(c1 + 4) % 5] + matrix[r2][(c2 + 4) % 5];
@@ -134,27 +150,27 @@ export default function PlayfairCipher() {
 
   const playfairEncrypt = (plaintext, key) => {
     if (!plaintext || !key) {
-      setError("Both plaintext and key are required!");
+      setError('Both plaintext and key are required!');
       setVisible(true);
-      return "";
+      return '';
     }
     const matrix = createMatrix(key);
     const pairs = preprocessText(plaintext, true);
-    return pairs.map((pair) => encryptPair(pair, matrix)).join("");
+    return pairs.map(pair => encryptPair(pair, matrix)).join('');
   };
 
   const playfairDecrypt = (ciphertext, key) => {
     if (!ciphertext || !key) {
-      setError("Both ciphertext and key are required!");
+      setError('Both ciphertext and key are required!');
       setVisible(true);
-      return "";
+      return '';
     }
     const matrix = createMatrix(key);
     const pairs = preprocessText(ciphertext, false);
-    let decrypted = pairs.map((pair) => decryptPair(pair, matrix)).join("");
+    let decrypted = pairs.map(pair => decryptPair(pair, matrix)).join('');
 
-    decrypted = decrypted.replace(/([A-Z])X(?=[A-Z])/g, "$1");
-    if (decrypted.endsWith("X")) {
+    decrypted = decrypted.replace(/([A-Z])X(?=[A-Z])/g, '$1');
+    if (decrypted.endsWith('X')) {
       decrypted = decrypted.slice(0, -1);
     }
 
@@ -166,46 +182,49 @@ export default function PlayfairCipher() {
   // Function to restrict input to alphabets only
   const handleTextChange = (text, setter) => {
     // Remove any non-alphabetic characters
-    const filteredText = text.replace(/[^A-Z]/gi, "");
+    const filteredText = text.replace(/[^A-Z]/gi, '');
     setter(filteredText);
+  };
+
+  const handleEncrypt = () => {
+    const result = playfairEncrypt(encryptionPlaintext, encryptionKey);
+    setCiphertext(result);
+    setDecryptionKey(encryptionKey);
+    setDecryptionCiphertext(result);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-
-      
-
-
       <Text style={styles.title}>Playfair Cipher</Text>
 
       <Text style={styles.title}>Encryption Algorithm</Text>
       <Text style={styles.sectionTitle}>Step 1: Construct the 5x5 Matrix</Text>
       <Text style={styles.text}>
-        Start with the keyword. Remove duplicate letters and omit 'J'. Add the rest of the alphabet in order,
-        excluding letters already in the matrix.
+        Start with the keyword. Remove duplicate letters and omit 'J'. Add the
+        rest of the alphabet in order, excluding letters already in the matrix.
       </Text>
       <Text style={styles.exampleTitle}>Example Keyword: MONARCHY</Text>
       <Text style={styles.exampleMatrix}>
-        M O N A R{'\n'}
-        C H Y B D{'\n'}
-        E F G I K{'\n'}
-        L P Q S T{'\n'}
-        U V W X Z
+        M O N A R{'\n'}C H Y B D{'\n'}E F G I K{'\n'}L P Q S T{'\n'}U V W X Z
       </Text>
       <Text style={styles.sectionTitle}>Step 2: Prepare the Plaintext</Text>
       <Text style={styles.text}>
-        Divide the plaintext into pairs of letters (digraphs). If a pair consists of the same letter (e.g., LL),
-        insert an 'X' between them. If the plaintext has an odd number of letters, append an 'X' to the end.
+        Divide the plaintext into pairs of letters (digraphs). If a pair
+        consists of the same letter (e.g., LL), insert an 'X' between them. If
+        the plaintext has an odd number of letters, append an 'X' to the end.
       </Text>
       <Text style={styles.exampleTitle}>Example Plaintext: INDIA</Text>
       <Text style={styles.text}>Digraphs: IN, DI, AX</Text>
       <Text style={styles.sectionTitle}>Step 3: Encrypt Each Digraph</Text>
       <Text style={styles.text}>
-        Find both letters of the digraph in the matrix. Apply the following rules:
-        {'\n'}1. Same Row: Replace each letter with the one to its right (wrap around to the start if needed).
-        {'\n'}2. Same Column: Replace each letter with the one below it (wrap around to the top if needed).
-        {'\n'}3. Rectangle: Form a rectangle; replace each letter with the one in its row but in the column of the
-        other letter.
+        Find both letters of the digraph in the matrix. Apply the following
+        rules:
+        {'\n'}1. Same Row: Replace each letter with the one to its right (wrap
+        around to the start if needed).
+        {'\n'}2. Same Column: Replace each letter with the one below it (wrap
+        around to the top if needed).
+        {'\n'}3. Rectangle: Form a rectangle; replace each letter with the one
+        in its row but in the column of the other letter.
       </Text>
       <Text style={styles.exampleTitle}>Example:</Text>
       <Text style={styles.text}>
@@ -226,11 +245,14 @@ export default function PlayfairCipher() {
 
       <Text style={styles.title}>Decryption Algorithm</Text>
       <Text style={styles.text}>
-        Use the same 5x5 matrix as for encryption. For each encrypted digraph, reverse the encryption rules:
-        {'\n'}1. Same Row: Replace each letter with the one to its left (wrap around to the end if needed).
-        {'\n'}2. Same Column: Replace each letter with the one above it (wrap around to the bottom if needed).
-        {'\n'}3. Rectangle: Form a rectangle; replace each letter with the one in its row but in the column of the
-        other letter.
+        Use the same 5x5 matrix as for encryption. For each encrypted digraph,
+        reverse the encryption rules:
+        {'\n'}1. Same Row: Replace each letter with the one to its left (wrap
+        around to the end if needed).
+        {'\n'}2. Same Column: Replace each letter with the one above it (wrap
+        around to the bottom if needed).
+        {'\n'}3. Rectangle: Form a rectangle; replace each letter with the one
+        in its row but in the column of the other letter.
       </Text>
       <Text style={styles.exampleTitle}>Example Ciphertext: GK KB IA</Text>
       <Text style={styles.text}>
@@ -256,25 +278,20 @@ export default function PlayfairCipher() {
           placeholder="Enter key"
           placeholderTextColor={placeholderColor}
           value={encryptionKey}
-          onChangeText={(text) => handleTextChange(text, setEncryptionKey)} // Only allow alphabets
+          onChangeText={text => handleTextChange(text, setEncryptionKey)} // Only allow alphabets
         />
         <TextInput
           style={styles.input}
           placeholder="Enter plaintext"
           placeholderTextColor={placeholderColor}
           value={encryptionPlaintext}
-          onChangeText={(text) => handleTextChange(text, setEncryptionPlaintext)} // Only allow alphabets
+          onChangeText={text => handleTextChange(text, setEncryptionPlaintext)} // Only allow alphabets
         />
-        <Button
-          title="Encrypt"
-          onPress={() =>
-            setCiphertext(playfairEncrypt(encryptionPlaintext, encryptionKey))
-          }
-        />
-        {ciphertext ? <Text style={styles.result}>Ciphertext: {ciphertext}</Text> : null}
+        <Button title="Encrypt" onPress={handleEncrypt} />
+        {ciphertext ? (
+          <Text style={styles.result}>Ciphertext: {ciphertext}</Text>
+        ) : null}
       </Animated.View>
-
-     
 
       <Animated.View style={[styles.card, decryptStyle]}>
         <Text style={styles.subtitle}>Decryption</Text>
@@ -283,19 +300,21 @@ export default function PlayfairCipher() {
           placeholder="Enter key"
           placeholderTextColor={placeholderColor}
           value={decryptionKey}
-          onChangeText={(text) => handleTextChange(text, setDecryptionKey)} // Only allow alphabets
+          onChangeText={text => handleTextChange(text, setDecryptionKey)} // Only allow alphabets
         />
         <TextInput
           style={styles.input}
           placeholder="Enter ciphertext"
           placeholderTextColor={placeholderColor}
           value={decryptionCiphertext}
-          onChangeText={(text) => handleTextChange(text, setDecryptionCiphertext)} // Only allow alphabets
+          onChangeText={text => handleTextChange(text, setDecryptionCiphertext)} // Only allow alphabets
         />
         <Button
           title="Decrypt"
           onPress={() =>
-            setDecryptedText(playfairDecrypt(decryptionCiphertext, decryptionKey))
+            setDecryptedText(
+              playfairDecrypt(decryptionCiphertext, decryptionKey),
+            )
           }
         />
         {decryptedText ? (
@@ -308,10 +327,9 @@ export default function PlayfairCipher() {
         onDismiss={dismissError}
         duration={3000}
         action={{
-          label: "Close",
+          label: 'Close',
           onPress: dismissError,
-        }}
-      >
+        }}>
         {error}
       </Snackbar>
     </ScrollView>
@@ -320,46 +338,45 @@ export default function PlayfairCipher() {
 
 const styles = StyleSheet.create({
   container: {
-
     flexGrow: 1,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
     padding: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: '700',
     marginBottom: 20,
-    color: "#3e3e3e",
+    color: '#3e3e3e',
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
     marginBottom: 10,
-    width: "100%",
+    width: '100%',
     elevation: 5,
   },
   subtitle: {
     fontSize: 22,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 10,
-    color: "#2e2e2e",
+    color: '#2e2e2e',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
-    width: "100%",
+    width: '100%',
     fontSize: 16,
-    backgroundColor: "#fafafa",
+    backgroundColor: '#fafafa',
   },
   result: {
     marginTop: 15,
     fontSize: 18,
-    color: "#333",
+    color: '#333',
   },
   sectionTitle: {
     fontSize: 20,
